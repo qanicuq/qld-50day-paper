@@ -129,9 +129,18 @@ def run(rows):
         if start is None:
             print("No new trading day; nothing to do.")
             return state, alerts
+    first_run = state["last_date"] is None
     for i in range(start, len(rows)):
         step(state, rows, i, alerts)
         state["last_date"] = rows[i][0]
+    if first_run:
+        # One-time alert so you know the bot and the phone alerts work.
+        day, _, cl = rows[-1]
+        sma = sum(r[2] for r in rows[-SMA_DAYS:]) / SMA_DAYS
+        side = "above" if cl > sma else "below"
+        alerts.insert(0, ("QLD paper bot started",
+                          f"{day}: QLD closed ${cl:.2f}, {side} its 50-day average "
+                          f"${sma:.2f}. Paper account: $10,000 cash."))
     with open(STATE, "w") as f:
         json.dump(state, f, indent=2)
     return state, alerts
