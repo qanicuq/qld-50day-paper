@@ -97,8 +97,8 @@ def step(state, rows, i, alerts):
 
     # 2. Mark the account to today's close.
     value = state["cash"] + state["shares"] * cl
-    append_csv(EQUITY, ["date", "account_value", "holding"],
-               [day, round(value, 2), int(state["holding"])])
+    append_csv(EQUITY, ["date", "account_value", "holding", "qld_close"],
+               [day, round(value, 2), int(state["holding"]), round(cl, 4)])
 
     # 3. Decide for tomorrow's open.
     closes = [r[2] for r in rows[max(0, i - SMA_DAYS + 1): i + 1]]
